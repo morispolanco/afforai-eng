@@ -14,12 +14,17 @@ def get_answer(question):
 
     try:
         response_json = response.json()
-        # Check if the expected key is present
-        if "suggestedUserResponses" in response_json:
-            return response_json["suggestedUserResponses"][0]
+        # Check for 'success' key in the response
+        if "success" in response_json and response_json["success"]:
+            # Check if the expected key is present
+            if "suggestedUserResponses" in response_json:
+                return response_json["suggestedUserResponses"][0]
+            else:
+                st.error("Unexpected response format. Full response: {}".format(response_json))
+                return "Error: Unexpected response format"
         else:
-            st.error("Unexpected response format. Full response: {}".format(response_json))
-            return "Error: Unexpected response format"
+            st.error("API request unsuccessful. Full response: {}".format(response_json))
+            return "Error: API request unsuccessful"
     except Exception as e:
         st.error("Error processing API response: {}".format(e))
         return "Error: Unable to process API response"
