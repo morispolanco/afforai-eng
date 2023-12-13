@@ -11,7 +11,18 @@ def get_answer(question):
         "google": True
     }
     response = requests.post(url, json=payload)
-    return response.json()["suggestedUserResponses"][0]
+
+    try:
+        response_json = response.json()
+        # Check if the expected key is present
+        if "suggestedUserResponses" in response_json:
+            return response_json["suggestedUserResponses"][0]
+        else:
+            st.error("Unexpected response format. Full response: {}".format(response_json))
+            return "Error: Unexpected response format"
+    except Exception as e:
+        st.error("Error processing API response: {}".format(e))
+        return "Error: Unable to process API response"
 
 def main():
     st.title("Guatemala Legislation QA App")
